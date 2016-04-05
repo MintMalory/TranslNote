@@ -40,4 +40,4 @@ captures/
 
 .idea/
 
-gradel.properties
+gradle.properties

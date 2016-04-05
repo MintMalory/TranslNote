@@ -3,13 +3,13 @@ package ua.mintmalory.translnote.translnote;
 import java.util.Date;
 import java.util.UUID;
 
-public class Item {
+public class Note {
     private String header;
     private String text;
     private final Date creationDate;
     private UUID mId;
 
-    public Item(String header, String text, Date creationDate) {
+    public Note(String header, String text, Date creationDate) {
         if (header == null) {
             header = "";
         }
@@ -28,19 +28,19 @@ public class Item {
         this.creationDate = creationDate;
     }
 
-    public void setHeader(String newHeader) {
+    public synchronized void setHeader(String newHeader) {
         header = newHeader;
     }
 
-    public void setText(String newText) {
+    public synchronized void setText(String newText) {
         text = newText;
     }
 
-    public String getText() {
+    public synchronized String getText() {
         return text;
     }
 
-    public String getHeader() {
+    public synchronized String getHeader() {
         return header;
     }
 

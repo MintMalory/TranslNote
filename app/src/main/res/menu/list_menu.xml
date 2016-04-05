@@ -6,6 +6,6 @@
         android:showAsAction="ifRoom|withText"/>
     <item android:id="@+id/menu_item_speech_to_text"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="Dictate note text"
+        android:title="Voice input"
         android:showAsAction="ifRoom|withText"/>
 </menu>

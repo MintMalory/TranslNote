@@ -2,30 +2,22 @@ package ua.mintmalory.translnote.translnote;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by User on 04.04.2016.
- */
 public class NotesLab {
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-    private ArrayList<Item> notes;
+    private ArrayList<Note> notes;
 
     private static NotesLab sNotesLab;
-    private Context mAppContext;
 
     private NotesLab(Context appContext) {
-        mAppContext = appContext;
-        notes = new ArrayList<Item>();
+        notes = new ArrayList<>();
 
         prefs = appContext.getSharedPreferences("NOTES_LIST", appContext.MODE_PRIVATE);
         editor = prefs.edit();
@@ -33,9 +25,9 @@ public class NotesLab {
         Gson gson = new Gson();
         String json = prefs.getString("NOTES_LIST", "");
         if (json.isEmpty()) {
-            notes = new ArrayList<Item>();
+            notes = new ArrayList<>();
         } else {
-            Type type = new TypeToken<List<Item>>() {
+            Type type = new TypeToken<List<Note>>() {
             }.getType();
             notes = gson.fromJson(json, type);
         }
@@ -48,19 +40,19 @@ public class NotesLab {
         return sNotesLab;
     }
 
-    public void addNote(Item note) {
+    public void addNote(Note note) {
         notes.add(note);
     }
 
-    public Item getNote(UUID id) {
-        for (Item c : notes) {
+    public Note getNote(UUID id) {
+        for (Note c : notes) {
             if (c.getId().equals(id))
                 return c;
         }
         return null;
     }
 
-    public ArrayList<Item> getCrimes() {
+    public ArrayList<Note> getCrimes() {
         return notes;
     }
 
@@ -73,7 +65,7 @@ public class NotesLab {
     }
 
     public void removeNote(UUID id) {
-        for (Item c : notes) {
+        for (Note c : notes) {
             if (c.getId().equals(id)) {
                 notes.remove(c);
                 return;

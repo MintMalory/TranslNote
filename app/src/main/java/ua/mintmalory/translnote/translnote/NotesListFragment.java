@@ -22,8 +22,9 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class NotesListFragment extends ListFragment {
-    private List<Item> mNotes;
+    private List<Note> mNotes;
     protected static final int RESULT_SPEECH = 1;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,10 +35,9 @@ public class NotesListFragment extends ListFragment {
     }
 
     public void onListItemClick(ListView l, View v, int position, long id) {
-
-        Item c = ((NotesListAdapter) getListAdapter()).getItem(position);
+        Note note = ((NotesListAdapter) getListAdapter()).getItem(position);
         Intent i = new Intent(getActivity(), NoteActivity.class);
-        i.putExtra(NoteFragment.EXTRA_NOTE_ID, c.getId());
+        i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
         startActivityForResult(i, 0);
     }
 
@@ -50,7 +50,7 @@ public class NotesListFragment extends ListFragment {
                     List<String> speechToText = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
-                    Item note = new Item(null, speechToText.get(0), new Date(System.currentTimeMillis()));
+                    Note note = new Note(null, speechToText.get(0), new Date(System.currentTimeMillis()));
                     NotesLab.get(getActivity()).addNote(note);
                     Intent i = new Intent(getActivity(), NoteActivity.class);
                     i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
@@ -61,9 +61,6 @@ public class NotesListFragment extends ListFragment {
             case 0:
                 ((NotesListAdapter) getListAdapter()).notifyDataSetChanged();
         }
-
-
-
     }
 
     @Override
@@ -76,8 +73,8 @@ public class NotesListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_note:
-                Item note = new Item(null, null, new Date(System.currentTimeMillis()));
-               NotesLab.get(getActivity()).addNote(note);
+                Note note = new Note(null, null, new Date(System.currentTimeMillis()));
+                NotesLab.get(getActivity()).addNote(note);
                 Intent i = new Intent(getActivity(), NoteActivity.class);
                 i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
                 startActivityForResult(i, 0);
@@ -86,12 +83,9 @@ public class NotesListFragment extends ListFragment {
                 Intent intent = new Intent(
                         RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
-
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
                 InputMethodSubtype ims = imm.getCurrentInputMethodSubtype();
-
                 String locale = ims.getLocale();
-
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, locale);
 
                 try {
@@ -107,32 +101,30 @@ public class NotesListFragment extends ListFragment {
                 return super.onOptionsItemSelected(item);
         }
     }
-        private class NotesListAdapter extends ArrayAdapter<Item> {
-            public NotesListAdapter(List<Item> notes) {
-                super(getActivity(), R.layout.list_item, notes);
+
+    private class NotesListAdapter extends ArrayAdapter<Note> {
+        public NotesListAdapter(List<Note> notes) {
+            super(getActivity(), R.layout.list_item, notes);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            if (null == convertView) {
+                convertView = getActivity().getLayoutInflater()
+                        .inflate(R.layout.list_item, null);
             }
 
+            Note note = getItem(position);
 
-            public View getView(int position, View convertView, ViewGroup parent) {
+            TextView header = (TextView) convertView.findViewById(R.id.item_headerText);
+            TextView subHeader = (TextView) convertView.findViewById(R.id.item_date);
 
-                if (null == convertView) {
-                    convertView = getActivity().getLayoutInflater()
-                            .inflate(R.layout.list_item, null);
-                }
+            header.setText(note.getHeader());
 
-
-                Item c = getItem(position);
-
-                TextView header = (TextView) convertView.findViewById(R.id.item_headerText);
-                TextView subHeader = (TextView) convertView.findViewById(R.id.item_date);
-
-                header.setText(c.getHeader());
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-                subHeader.setText(dateFormat.format(c.getCreationDate()));
-                return convertView;
-            }
-
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+            subHeader.setText(dateFormat.format(note.getCreationDate()));
+            return convertView;
         }
     }
+}
 
