@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TranslNote</string>
+	
+	
+	<!--List of languages -->
+	<string-array name="languages">
+    <item>"English:en"</item>
+    <item>"Українська:uk"</item>
+	<item>"Русский:ru"</item>
+</string-array>
+	
 </resources>

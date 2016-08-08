@@ -85,16 +85,17 @@ public class NotesListFragment extends ListFragment {
 
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
                 InputMethodSubtype ims = imm.getCurrentInputMethodSubtype();
-                String locale = ims.getLocale();
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, locale);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+				intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something...");
+				//String locale = ims.getLocale();
+                //intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, locale);
 
                 try {
                     startActivityForResult(intent, RESULT_SPEECH);
                 } catch (ActivityNotFoundException a) {
-                    Toast t = Toast.makeText(getContext(),
+                    Toast.makeText(getContext(),
                             "Opps! Your device doesn't support Speech to Text",
-                            Toast.LENGTH_SHORT);
-                    t.show();
+                            Toast.LENGTH_SHORT).show();
                 }
                 return true;
             default:
@@ -121,6 +122,7 @@ public class NotesListFragment extends ListFragment {
 
             header.setText(note.getHeader());
 
+			//dateFormat перенести в строковые ресурсы и менять в зависимости от локализации
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
             subHeader.setText(dateFormat.format(note.getCreationDate()));
             return convertView;
