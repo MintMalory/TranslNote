@@ -1,12 +1,10 @@
 package ua.mintmalory.translnote.translnote;
 
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +14,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import ua.mintmalory.translnote.translnote.api.YandexTranslateService;
 
 public class TranslatedNoteFragment extends Fragment {
     public static final String EXTRA_TRANSLATED_NOTE_ID = "translnote.TRANSLATED_NOTE_ID";
@@ -41,7 +36,7 @@ public class TranslatedNoteFragment extends Fragment {
     private Spinner spinnerFromLng;
     private Spinner spinnerToLng;
     private Button translateBtn;
-    private FetchTranslationTask translationTask;
+    private Retrofit mRetrofit;
 
     static {
         languages.put("English", "en");
@@ -119,128 +114,39 @@ public class TranslatedNoteFragment extends Fragment {
         spinnerToLng = (Spinner) v.findViewById(R.id.spinner_to_lng);
         spinnerFromLng.setAdapter(adapter);
         spinnerToLng.setAdapter(adapter);
+
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(YandexTranslateService.ENDPOINT)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
         translateBtn = (Button) v.findViewById(R.id.translate_btn);
 
         translateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                translationTask = new FetchTranslationTask();
-                translationTask.execute(mTitleField.getText().toString(),
+                YandexTranslateService service = mRetrofit.create(YandexTranslateService.class);
+                Call<List<String>> call = service.getTranslation(YandexTranslateService.API_KEY,
+                        mTitleField.getText().toString(),
                         mTextField.getText().toString(),
-                        languages.get(spinnerFromLng.getSelectedItem().toString()),
-                        languages.get(spinnerToLng.getSelectedItem().toString()));
-                String[] result = null;
-                try {
-                    result = translationTask.get();
-                } catch (InterruptedException | ExecutionException e) {
+                        spinnerFromLng.getSelectedItem().toString() + "-" + spinnerToLng.getSelectedItem().toString());
 
-                }
-                if (result != null) {
-                    mTranslatedTitle.setText(result[0]);
-                    mTranslatedText.setText(result[1]);
-                }
+                call.enqueue(new Callback<List<String>>() {
+                    @Override
+                    public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                        if (response.code() == 200) {
+                            mTranslatedTitle.setText(response.body().get(0));
+                            mTranslatedText.setText(response.body().get(1));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<String>> call, Throwable t) {
+
+                    }
+                });
             }
         });
         return v;
-    }
-
-
-    public class FetchTranslationTask extends AsyncTask<String, Void, String[]> {
-        private final String LOG_TAG = FetchTranslationTask.class.getSimpleName();
-
-        private String[] getTranslatedTextFromJson(String translationJsonStr)
-                throws JSONException {
-            JSONObject translatedJson = new JSONObject(translationJsonStr);
-            JSONArray textArray = translatedJson.getJSONArray("text");
-
-
-            String[] resultStrs = new String[2];
-
-            resultStrs[0] = textArray.getString(0);
-            resultStrs[1] = textArray.getString(1);
-
-            return resultStrs;
-
-        }
-
-        @Override
-        protected String[] doInBackground(String... params) {
-
-            if (params.length == 0) {
-                return null;
-            }
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            String translationJsonStr = null;
-
-            try {
-                final String TRANSLATE_BASE_URL =
-                        "https://translate.yandex.net/api/v1.5/tr.json/translate?";
-                final String KEY = "key";
-                final String APIkey = "trnsl.1.1.20160331T065039Z.998c0e81c56fb0fe.8b1ab0611b1b6c7f28d15d8bd563a86977b7889a";
-                final String TITLE = "text";
-                final String TEXT = "text";
-                final String LANGUAGE = "lang";
-                final String FORMAT = "format";
-                final String plainFormat = "plain";
-
-                Uri builtUri = Uri.parse(TRANSLATE_BASE_URL).buildUpon()
-                        .appendQueryParameter(KEY, APIkey)
-                        .appendQueryParameter(TITLE, params[0])
-                        .appendQueryParameter(TEXT, params[1])
-                        .appendQueryParameter(LANGUAGE, params[2] + "-" + params[3])
-                        .appendQueryParameter(FORMAT, plainFormat)
-                        .build();
-
-                URL url = new URL(builtUri.toString());
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    return null;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    return null;
-                }
-
-                translationJsonStr = buffer.toString();
-
-            } catch (IOException e) {
-                return null;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-
-            try {
-                return getTranslatedTextFromJson(translationJsonStr);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 }

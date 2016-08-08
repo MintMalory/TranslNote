@@ -84,7 +84,7 @@ public class NotesListFragment extends ListFragment {
                         RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(getContext().INPUT_METHOD_SERVICE);
-                InputMethodSubtype ims = imm.getCurrentInputMethodSubtype();
+              //  InputMethodSubtype ims = imm.getCurrentInputMethodSubtype();
                 intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 				intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Say something...");
 				//String locale = ims.getLocale();
