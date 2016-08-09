@@ -14,6 +14,11 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.UUID;
 
+import ua.mintmalory.translnote.translnote.fragments.NoteFragment;
+import ua.mintmalory.translnote.translnote.fragments.NotesListFragment;
+import ua.mintmalory.translnote.translnote.fragments.TranslatedNoteFragment;
+import ua.mintmalory.translnote.translnote.model.NotesLab;
+
 public class NoteActivity extends SingleFragmentActivity {
     private UUID noteId;
     private NoteFragment noteFragment;

@@ -1,4 +1,4 @@
-package ua.mintmalory.translnote.translnote;
+package ua.mintmalory.translnote.translnote.fragments;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.view.inputmethod.InputMethodSubtype;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,9 +20,14 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import ua.mintmalory.translnote.translnote.model.Note;
+import ua.mintmalory.translnote.translnote.NoteActivity;
+import ua.mintmalory.translnote.translnote.model.NotesLab;
+import ua.mintmalory.translnote.translnote.R;
+
 public class NotesListFragment extends ListFragment {
     private List<Note> mNotes;
-    protected static final int RESULT_SPEECH = 1;
+    public static final int RESULT_SPEECH = 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

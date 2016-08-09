@@ -1,4 +1,4 @@
-package ua.mintmalory.translnote.translnote;
+package ua.mintmalory.translnote.translnote.model;
 
 import java.util.Date;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package ua.mintmalory.translnote.translnote;
+package ua.mintmalory.translnote.translnote.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import java.util.UUID;
+
+import ua.mintmalory.translnote.translnote.model.Note;
+import ua.mintmalory.translnote.translnote.model.NotesLab;
+import ua.mintmalory.translnote.translnote.R;
 
 public class NoteFragment extends Fragment {
     public static final String EXTRA_NOTE_ID = "translnote.NOTE_ID";

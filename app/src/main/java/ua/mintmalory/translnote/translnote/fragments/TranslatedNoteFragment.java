@@ -1,10 +1,11 @@
-package ua.mintmalory.translnote.translnote;
+package ua.mintmalory.translnote.translnote.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ua.mintmalory.translnote.translnote.model.Note;
+import ua.mintmalory.translnote.translnote.model.NotesLab;
+import ua.mintmalory.translnote.translnote.R;
 import ua.mintmalory.translnote.translnote.api.YandexTranslateService;
+import ua.mintmalory.translnote.translnote.model.Translation;
 
 public class TranslatedNoteFragment extends Fragment {
     public static final String EXTRA_TRANSLATED_NOTE_ID = "translnote.TRANSLATED_NOTE_ID";
@@ -126,23 +132,24 @@ public class TranslatedNoteFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 YandexTranslateService service = mRetrofit.create(YandexTranslateService.class);
-                Call<List<String>> call = service.getTranslation(YandexTranslateService.API_KEY,
+                Call<Translation> call = service.getTranslation(YandexTranslateService.API_KEY,
                         mTitleField.getText().toString(),
                         mTextField.getText().toString(),
-                        spinnerFromLng.getSelectedItem().toString() + "-" + spinnerToLng.getSelectedItem().toString());
+                        languages.get(spinnerFromLng.getSelectedItem().toString()) + "-" + languages.get(spinnerToLng.getSelectedItem().toString()));
 
-                call.enqueue(new Callback<List<String>>() {
+                call.enqueue(new Callback<Translation>() {
                     @Override
-                    public void onResponse(Call<List<String>> call, Response<List<String>> response) {
+                    public void onResponse(Call<Translation> call, Response<Translation> response) {
                         if (response.code() == 200) {
-                            mTranslatedTitle.setText(response.body().get(0));
-                            mTranslatedText.setText(response.body().get(1));
-                        }
+                            mTranslatedTitle.setText(response.body().getTitle());
+                            mTranslatedText.setText(response.body().getText());
+                        } else
+                            Toast.makeText(getContext(), "Oops! Code " + response.code(), Toast.LENGTH_LONG).show();
                     }
 
                     @Override
-                    public void onFailure(Call<List<String>> call, Throwable t) {
-
+                    public void onFailure(Call<Translation> call, Throwable t) {
+                        Toast.makeText(getContext(), "Error!", Toast.LENGTH_LONG).show();
                     }
                 });
             }

@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/fab_margin">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/note_untranslated_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="true" />
-
-        <EditText
-            android:id="@+id/note_untranslated_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="false" />
+        android:layout_height="match_parent">
 
         <LinearLayout
+            android:layout_marginTop="@dimen/fab_margin"
+            android:id="@+id/translation_options_panel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -55,6 +47,30 @@
                 android:textColor="#ffffff" />
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/note_untranslated_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/translation_options_panel"
+            android:layout_centerHorizontal="true"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/note_untranslated_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/note_untranslated_title"
+            android:layout_centerHorizontal="true"
+            android:singleLine="false" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@android:color/darker_gray"
+            android:id="@+id/divider"
+            android:layout_below="@id/note_untranslated_text"
+            android:layout_centerHorizontal="true"/>
+
         <TextView
             android:id="@+id/note_translated_title"
             android:layout_width="match_parent"
@@ -62,7 +78,9 @@
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/black"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            android:layout_below="@id/divider"
+            android:layout_centerHorizontal="true"/>
 
         <TextView
             android:id="@+id/note_translated_text"
@@ -71,6 +89,17 @@
             android:singleLine="false"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/black"
-            android:textStyle="italic" />
-    </LinearLayout>
+            android:textStyle="italic"
+            android:layout_below="@id/note_translated_title"
+            android:layout_centerHorizontal="true"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@android:drawable/ic_menu_save" />
+    </RelativeLayout>
 </ScrollView>
