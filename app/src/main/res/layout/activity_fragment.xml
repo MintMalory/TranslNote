@@ -3,4 +3,6 @@
     android:id="@+id/fragmentContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+	
+	ПЕРЕИМЕНОВАТЬ ВО ЧТО_ТО АДЕКВАТНОЕ!
     />

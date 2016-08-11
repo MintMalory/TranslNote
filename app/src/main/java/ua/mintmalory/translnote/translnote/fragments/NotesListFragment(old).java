@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.ListFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.support.v4.app.Fragment;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -25,33 +25,21 @@ import ua.mintmalory.translnote.translnote.NoteActivity;
 import ua.mintmalory.translnote.translnote.model.NotesLab;
 import ua.mintmalory.translnote.translnote.R;
 
-public class NotesListFragment extends Fragment {
+public class NotesListFragment extends ListFragment {
     private List<Note> mNotes;
     public static final int RESULT_SPEECH = 1;
-	private ListView mNotesListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mNotes = NotesLab.get(getActivity()).getCrimes();
+        NotesListAdapter adapter = new NotesListAdapter(mNotes);
+        setListAdapter(adapter);
     }
-	
-	    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-                             Bundle savedInstanceState) {
-         
-        View viewHierarchy = inflater.inflate(R.layout.notes_list_fragment, false);
-        mNotesListView = (ListView) container.findViewById(R.id.notes_listView);
-		NotesListAdapter adapter = new NotesListAdapter(mNotes);
-        mNotesListView.setListAdapter(adapter);
-		
-        return viewHierarchy;
-    }
-	
 
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Note note = ((NotesListAdapter) mNotesListView.getListAdapter()).getItem(position);
+        Note note = ((NotesListAdapter) getListAdapter()).getItem(position);
         Intent i = new Intent(getActivity(), NoteActivity.class);
         i.putExtra(NoteFragment.EXTRA_NOTE_ID, note.getId());
         startActivityForResult(i, 0);
@@ -75,7 +63,7 @@ public class NotesListFragment extends Fragment {
                 break;
             }
             case 0:
-                ((NotesListAdapter) mNotesListView.getListAdapter()).notifyDataSetChanged();
+                ((NotesListAdapter) getListAdapter()).notifyDataSetChanged();
         }
     }
 
@@ -125,36 +113,24 @@ public class NotesListFragment extends Fragment {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-ViewHolder holder;
-            
-			
-			if (null == convertView) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item, null);
-				holder = new ViewHolder();
-				holder.noteHeaderView= (TextView) convertView.findViewById(R.id.item_headerText);
-                holder.noteTextView = (TextView) convertView.findViewById(R.id.item_date);
-				convertView.setTag(holder);
-            }else{
-				holder = (ViewHolder) convertView.getTag();
-			}
+
+            if (null == convertView) {
+                convertView = getActivity().getLayoutInflater()
+                        .inflate(R.layout.list_item, null);
+            }
 
             Note note = getItem(position);
 
+            TextView header = (TextView) convertView.findViewById(R.id.item_headerText);
+            TextView subHeader = (TextView) convertView.findViewById(R.id.item_date);
 
-
-            holder.noteHeaderView.setText(note.getHeader());
+            header.setText(note.getHeader());
 
 			//dateFormat перенести в строковые ресурсы и менять в зависимости от локализации
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-            holder.noteSubHeaderView.setText(dateFormat.format(note.getCreationDate()));
+            subHeader.setText(dateFormat.format(note.getCreationDate()));
             return convertView;
         }
-		
-	static class ViewHolder {
-		public TextView noteHeaderView;
-		public TextView noteSubHeaderView;
-	}
-	
     }
 }
 
