@@ -132,10 +132,39 @@ public class TranslatedNoteFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 YandexTranslateService service = mRetrofit.create(YandexTranslateService.class);
+				
+				String fromLng = languages.get(spinnerFromLng.getSelectedItem().toString());
+				String toLng = languages.get(spinnerToLng.getSelectedItem().toString());
+				
+				/*if(fromLng.isEmpty()){
+					 Call<Translation> call = service.detectLanguageOfText(YandexTranslateService.API_KEY,
+                        mTextField.getText().toString());
+						
+				call.enqueue(new Callback<DetectedLanguage>() {
+                    @Override
+                    public void onResponse(Call<DetectedLanguage> call, Response<DetectedLanguage> response) {
+                        if (response.code() == 200) {
+                            mTranslatedTitle.setText(response.body().getTitle());
+                            mTranslatedText.setText(response.body().getText());
+                        } else
+                            Toast.makeText(getContext(), "Oops! Code " + response.code(), Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Translation> call, Throwable t) {
+                        Toast.makeText(getContext(), "Error!", Toast.LENGTH_LONG).show();
+                    }
+                });
+            		
+						
+				}
+				TODO:Добавить AsyncTask и request внутри него!
+				*/
+				
                 Call<Translation> call = service.getTranslation(YandexTranslateService.API_KEY,
                         mTitleField.getText().toString(),
                         mTextField.getText().toString(),
-                        languages.get(spinnerFromLng.getSelectedItem().toString()) + "-" + languages.get(spinnerToLng.getSelectedItem().toString()));
+                        fromLng+ "-" + toLng);
 
                 call.enqueue(new Callback<Translation>() {
                     @Override
