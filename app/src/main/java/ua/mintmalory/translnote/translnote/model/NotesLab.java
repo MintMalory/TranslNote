@@ -51,8 +51,8 @@ public class NotesLab {
         }
         return null;
     }
-//TODO: remane getCrimes to getNotes
-    public ArrayList<Note> getCrimes() {
+
+    public ArrayList<Note> getNotes() {
         return notes;
     }
 
